@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -eo pipefail
+
+export START_TIME=${START_TIME:-$(date +%s)}
+
+GREEN='\033[1;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+seconds() {
+    echo $(( $(date +%s) - $START_TIME ))
+}
+
+log() {
+    local message="$@"
+    printf "\n${GREEN}[%d:%02d] ${message}${NC}\n" $(( $(seconds)/60 )) $(( $(seconds)%60 ))
+}
+
+# log heading
+logh() {
+    local message="$@"
+    message=$(printf "[%d:%02d] $message" $(( $(seconds)/60 )) $(( $(seconds)%60 )))
+    printf "\n${GREEN}${message}${NC}\n"
+    printf "${GREEN}$(printf '%.0s-' $(seq 1 ${#message}))${NC}\n"
+}
+
+# log time (no colour or newline character)
+logt() {
+    local message="$@"
+    printf "[%d:%02d] ${message}\n" $(( $(seconds)/60 )) $(( $(seconds)%60 ))
+}
+
+# log error
+loge() {
+    local message="$@"
+    printf "${RED}[%d:%02d] ${message}${NC}\n" $(( $(seconds)/60 )) $(( $(seconds)%60 )) >&2
+}

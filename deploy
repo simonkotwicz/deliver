@@ -1,0 +1,29 @@
+#!/bin/bash
+
+source $(dirname "$0")/common
+
+APP_NAME=${REPO##*/}
+
+log "Configuring kubectl to target deployment server and namespace..."
+kubectl config set-cluster deploy-cluster --server $SERVER
+kubectl config set clusters.deploy-cluster.certificate-authority-data $CA_DATA
+kubectl config set-credentials deploy-user --token $SERVICE_ACCOUNT_TOKEN
+kubectl config set-context deploy-context --cluster=deploy-cluster --user=deploy-user --namespace=$APP_NAME
+kubectl config use-context deploy-context
+
+cp -rn $(dirname "$0")/templates chart
+
+log "Running helm lint..."
+helm lint chart \
+    --set image.repository=$IMAGE_ID \
+    --set image.tag=$VERSION
+
+log "Deploying $APP_NAME..."
+helm upgrade $APP_NAME chart --install --cleanup-on-fail \
+    --set image.repository=$IMAGE_ID \
+    --set image.tag=$VERSION
+
+log "Waiting for deployment rollout..."
+kubectl rollout status deployment/$APP_NAME --timeout=3m
+
+log "Successfully deployed $APP_NAME."

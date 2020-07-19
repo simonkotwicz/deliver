@@ -1,0 +1,29 @@
+name: main
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  DOCKERHUB_USERNAME: simonkotwicz
+  DOCKERHUB_TOKEN: ${{ secrets.dockerhubAccessToken }}
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: deliver
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and Publish
+        run: |
+          echo "$DOCKERHUB_TOKEN" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+
+          IMAGE_ID=$DOCKERHUB_USERNAME/$IMAGE_NAME
+          docker pull $IMAGE_ID || true
+
+          export DOCKER_BUILDKIT=1
+          docker build . --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_ID --tag $IMAGE_ID
+
+          docker push $IMAGE_ID

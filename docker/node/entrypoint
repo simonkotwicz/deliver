@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -eo pipefail
+
+export NODE_ENV=${ENV:-$NODE_ENV}
+if [[ $NODE_ENV == production ]]; then
+    npm start
+else
+    npm install && npm test
+fi

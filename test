@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source $(dirname "$0")/common
+
+log "Running test image $IMAGE_ID..."
+export DOCKER_RUN_ARG_ENV=$ENV
+DOCKER_RUN_ARGS="$(env | (grep '^DOCKER_RUN_ARG_' || :) | sed 's/^DOCKER_RUN_ARG_/-e /')"
+docker run --tty $DOCKER_RUN_ARGS $IMAGE_ID
+
+log "Successfully ran test image."
