@@ -14,7 +14,7 @@ kubectl config use-context deploy-context
 cp -rn $(dirname "$0")/templates chart
 
 log "Running helm lint..."
-helm lint chart \
+helm lint --strict chart \
     --set image.repository=$IMAGE_ID \
     --set image.tag=$VERSION
 
