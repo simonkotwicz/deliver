@@ -4,14 +4,16 @@ source $(dirname "$0")/common
 
 log "Publishing $IMAGE_ID:latest to registry..."
 docker push $IMAGE_ID:latest
+REPO_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE_ID:latest)
+echo ::set-env name=REPO_DIGEST::$REPO_DIGEST
+
 if [[ $ENV == production ]]; then
     VERSION=$(($(git rev-list --count HEAD) % 9 + 1)) # rotate between versions 1 to 9
     log "Publishing $IMAGE_ID:$VERSION to registry..."
     docker tag $IMAGE_ID:latest $IMAGE_ID:$VERSION
     docker push $IMAGE_ID:$VERSION
- else
+else
     VERSION=latest
- fi
-echo ::set-env name=VERSION::$VERSION
+fi
 
 log "Successfully published $IMAGE_ID:$VERSION to registry."
