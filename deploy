@@ -2,7 +2,7 @@
 
 source $(dirname "$0")/common
 
-APP_NAME=${REPO##*/}
+APP_NAME=${GITHUB_REPOSITORY#*/}
 
 log "Configuring kubectl to target deployment server and namespace..."
 kubectl config set-cluster deploy-cluster --server $SERVER
@@ -15,13 +15,11 @@ cp -rn $(dirname "$0")/templates chart
 
 log "Running helm lint..."
 helm lint --strict chart \
-    --set image.repository=$IMAGE_ID \
-    --set image.tag=$VERSION
+    --set image.repoDigest=$REPO_DIGEST
 
 log "Deploying $APP_NAME..."
 helm upgrade $APP_NAME chart --install --cleanup-on-fail \
-    --set image.repository=$IMAGE_ID \
-    --set image.tag=$VERSION
+    --set image.repoDigest=$REPO_DIGEST
 
 log "Waiting for deployment rollout..."
 kubectl rollout status deployment/$APP_NAME --timeout=3m

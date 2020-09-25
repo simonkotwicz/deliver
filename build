@@ -2,18 +2,18 @@
 
 source $(dirname "$0")/common
 
-IMAGE_NAME=${REPO##*/}
+REGISTRY=ghcr.io
+REGISTRY_USERNAME=${GITHUB_REPOSITORY%%/*}
+
+IMAGE_NAME=${GITHUB_REPOSITORY#*/}
 if [[ $ENV != production ]]; then
     IMAGE_NAME=$IMAGE_NAME-$ENV
 fi
-IMAGE_ID=$(tr '[A-Z]' '[a-z]' <<< docker.pkg.github.com/$REPO/$IMAGE_NAME)
+IMAGE_ID=$(tr '[A-Z]' '[a-z]' <<< $REGISTRY/$REGISTRY_USERNAME/$IMAGE_NAME)
 echo ::set-env name=IMAGE_ID::$IMAGE_ID
 
 log "Logging in to docker registry..."
-echo "$GITHUB_TOKEN" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-
-log "Pulling latest $IMAGE_ID from registry..."
-docker pull $IMAGE_ID || true
+echo "$REGISTRY_TOKEN" | docker login $REGISTRY -u $REGISTRY_USERNAME --password-stdin
 
 log "Building $IMAGE_ID..."
 if [[ "$DOCKERFILE" ]]; then
