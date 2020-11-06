@@ -5,7 +5,7 @@ source $(dirname "$0")/common
 log "Publishing $IMAGE_ID:latest to registry..."
 docker push $IMAGE_ID:latest
 REPO_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE_ID:latest)
-echo ::set-env name=REPO_DIGEST::$REPO_DIGEST
+echo "REPO_DIGEST=$REPO_DIGEST" >> $GITHUB_ENV
 
 if [[ $ENV == production ]]; then
     VERSION=$(($(git rev-list --count HEAD) % 9 + 1)) # rotate between versions 1 to 9

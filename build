@@ -10,7 +10,7 @@ if [[ $ENV != production ]]; then
     IMAGE_NAME=$IMAGE_NAME-$ENV
 fi
 IMAGE_ID=$(tr '[A-Z]' '[a-z]' <<< $REGISTRY/$REGISTRY_USERNAME/$IMAGE_NAME)
-echo ::set-env name=IMAGE_ID::$IMAGE_ID
+echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
 
 log "Logging in to docker registry..."
 echo "$REGISTRY_TOKEN" | docker login $REGISTRY -u $REGISTRY_USERNAME --password-stdin
