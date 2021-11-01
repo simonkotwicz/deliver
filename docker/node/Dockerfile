@@ -7,11 +7,11 @@ WORKDIR /home/node
 ARG ENV
 ENV NODE_ENV ${ENV}
 
-COPY package.json package-lock.json ./
+COPY --chown=node package.json package-lock.json ./
 
 RUN npm install
 
-COPY . .
+COPY --chown=node . .
 
 ARG PORT=8080
 ENV PORT ${PORT}
