@@ -23,7 +23,7 @@ jobs:
 
           IMAGE_ID=$REGISTRY/$REGISTRY_USERNAME/$IMAGE_NAME
 
-          export DOCKER_BUILDKIT=1
-          docker build . --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_ID --tag $IMAGE_ID
+          docker pull $IMAGE_ID
+          docker build . --cache-from $IMAGE_ID --tag $IMAGE_ID
 
           docker push $IMAGE_ID
