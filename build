@@ -23,6 +23,7 @@ export DOCKER_BUILDKIT=1
 export DOCKER_BUILD_ARG_ENV=$ENV
 export DOCKER_BUILD_ARG_BUILDKIT_INLINE_CACHE=1
 DOCKER_BUILD_ARGS="$(env | (grep '^DOCKER_BUILD_ARG_' || :) | sed 's/^DOCKER_BUILD_ARG_/--build-arg /')"
+docker pull $IMAGE_ID || true
 docker build . --tag $IMAGE_ID --cache-from $IMAGE_ID $DOCKER_BUILD_ARGS $DOCKERFILE_ARG
 
 log "Successfully built $IMAGE_ID."
