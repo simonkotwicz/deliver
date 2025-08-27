@@ -8,6 +8,7 @@ REPO_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE_ID:lates
 echo "REPO_DIGEST=$REPO_DIGEST" >> $GITHUB_ENV
 
 if [[ $ENV == production ]]; then
+    git config --global --add safe.directory $GITHUB_WORKSPACE
     VERSION=$(($(git rev-list --count HEAD) % 9 + 1)) # rotate between versions 1 to 9
     log "Publishing $IMAGE_ID:$VERSION to registry..."
     docker tag $IMAGE_ID:latest $IMAGE_ID:$VERSION
